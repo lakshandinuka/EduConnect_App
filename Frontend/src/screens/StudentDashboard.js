@@ -61,6 +61,12 @@ const StudentDashboard = ({ navigation }) => {
           onPress={() => navigation.navigate('Bookings')}
         />
         <QuickCard
+          icon="book-outline"
+          label="Knowledgebase"
+          color="#F39C12"
+          onPress={() => navigation.navigate('Knowledgebase')}
+        />
+        <QuickCard
           icon="megaphone-outline"
           label="Announcements"
           color="#1ABC9C"
