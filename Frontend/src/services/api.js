@@ -9,7 +9,7 @@ const getApiUrl = () => {
   return 'http://localhost:5001/api';
 };
 
-const API_URL = getApiUrl();
+export const API_URL = getApiUrl();
 
 const api = axios.create({
   baseURL: API_URL,
