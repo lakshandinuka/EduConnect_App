@@ -1,0 +1,10 @@
+const express = require('express');
+const router = express.Router();
+const { getSLAPolicies, createSLAPolicy } = require('../controllers/slaPolicyController');
+const { protect } = require('../middleware/authMiddleware');
+
+router.route('/')
+  .get(protect, getSLAPolicies)
+  .post(protect, createSLAPolicy);
+
+module.exports = router;
