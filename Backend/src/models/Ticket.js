@@ -50,6 +50,21 @@ const ticketSchema = new mongoose.Schema({
     ref: 'User',
   },
   comments: [commentSchema],
+  // Student satisfaction rating (submitted when ticket is RESOLVED or CLOSED)
+  rating: {
+    type: Number,
+    min: 1,
+    max: 5,
+    default: null,
+  },
+  ratingComment: {
+    type: String,
+    default: null,
+  },
+  resolvedAt: {
+    type: Date,
+    default: null,
+  },
 }, { timestamps: true });
 
 module.exports = mongoose.model('Ticket', ticketSchema);

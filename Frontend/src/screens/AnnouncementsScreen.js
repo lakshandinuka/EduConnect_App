@@ -1,27 +1,42 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, FlatList, StyleSheet, ActivityIndicator, RefreshControl } from 'react-native';
 import { getAnnouncements } from '../services/announcementService';
+import { useFocusEffect } from '@react-navigation/native';
+
+const POLL_INTERVAL = 30000; // 30 seconds
 
 const AnnouncementsScreen = () => {
   const [announcements, setAnnouncements] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const pollRef = useRef(null);
 
-  const fetchAnnouncements = async () => {
+  const fetchAnnouncements = async (silent = false) => {
     try {
       const data = await getAnnouncements();
       setAnnouncements(data);
     } catch (error) {
       console.log('Error fetching announcements', error);
     } finally {
-      setLoading(false);
-      setRefreshing(false);
+      if (!silent) {
+        setLoading(false);
+        setRefreshing(false);
+      }
     }
   };
 
-  useEffect(() => {
-    fetchAnnouncements();
-  }, []);
+  useFocusEffect(
+    React.useCallback(() => {
+      setLoading(true);
+      fetchAnnouncements();
+      // Start polling when screen is focused
+      pollRef.current = setInterval(() => fetchAnnouncements(true), POLL_INTERVAL);
+      return () => {
+        // Stop polling when screen loses focus
+        if (pollRef.current) clearInterval(pollRef.current);
+      };
+    }, [])
+  );
 
   const onRefresh = () => {
     setRefreshing(true);

@@ -32,6 +32,13 @@ const createTicket = async (req, res, next) => {
   try {
     const { title, description, department, inquiryType } = req.body;
 
+    console.log('[createTicket] body:', { title, description, department, inquiryType });
+    console.log('[createTicket] student:', req.user._id);
+
+    if (!title || !description || !department || !inquiryType) {
+      return res.status(400).json({ message: 'All fields (title, description, department, inquiryType) are required' });
+    }
+
     const ticket = await Ticket.create({
       title,
       description,
@@ -42,9 +49,11 @@ const createTicket = async (req, res, next) => {
 
     res.status(201).json(ticket);
   } catch (error) {
+    console.error('[createTicket] error:', error.message);
     next(error);
   }
 };
+
 
 // @desc    Get single ticket
 // @route   GET /api/tickets/:id
@@ -153,6 +162,11 @@ const approveTicket = async (req, res, next) => {
 
     ticket.status = status || 'RESOLVED';
 
+    // Stamp resolvedAt when ticket is resolved or closed
+    if (['RESOLVED', 'CLOSED'].includes(ticket.status) && !ticket.resolvedAt) {
+      ticket.resolvedAt = new Date();
+    }
+
     if (note) {
       ticket.comments.push({ text: `[ADMIN] ${note}`, author: req.user._id });
     }
@@ -195,6 +209,48 @@ const updateTicketSLA = async (req, res, next) => {
   }
 };
 
+// @desc    Rate a resolved/closed ticket (student only, once)
+// @route   PUT /api/tickets/:id/rate
+// @access  Private (student)
+const rateTicket = async (req, res, next) => {
+  try {
+    const { rating, ratingComment } = req.body;
+
+    if (!rating || rating < 1 || rating > 5) {
+      return res.status(400).json({ message: 'Rating must be between 1 and 5' });
+    }
+
+    const ticket = await Ticket.findById(req.params.id);
+
+    if (!ticket) {
+      return res.status(404).json({ message: 'Ticket not found' });
+    }
+
+    // Only the ticket owner can rate
+    if (ticket.student.toString() !== req.user._id.toString()) {
+      return res.status(403).json({ message: 'Not authorized to rate this ticket' });
+    }
+
+    // Only rate resolved or closed tickets
+    if (!['RESOLVED', 'CLOSED'].includes(ticket.status)) {
+      return res.status(400).json({ message: 'You can only rate resolved or closed tickets' });
+    }
+
+    // Prevent re-rating
+    if (ticket.rating !== null && ticket.rating !== undefined) {
+      return res.status(400).json({ message: 'You have already rated this ticket' });
+    }
+
+    ticket.rating = rating;
+    ticket.ratingComment = ratingComment || null;
+    await ticket.save();
+
+    res.json({ message: 'Rating submitted successfully', rating: ticket.rating });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   getTickets,
   createTicket,
@@ -203,4 +259,5 @@ module.exports = {
   escalateTicket,
   approveTicket,
   updateTicketSLA,
+  rateTicket,
 };

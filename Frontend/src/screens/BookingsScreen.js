@@ -1,30 +1,46 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, FlatList, StyleSheet, TouchableOpacity, ActivityIndicator, RefreshControl } from 'react-native';
 import { getBookings } from '../services/bookingService';
 import { Ionicons } from '@expo/vector-icons';
+
+const POLL_INTERVAL = 30000; // 30 seconds
 
 const BookingsScreen = ({ navigation }) => {
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const pollRef = useRef(null);
 
-  const fetchBookings = async () => {
+  const fetchBookings = async (silent = false) => {
     try {
       const data = await getBookings();
       setBookings(data);
     } catch (error) {
       console.log('Error fetching bookings', error);
     } finally {
-      setLoading(false);
-      setRefreshing(false);
+      if (!silent) {
+        setLoading(false);
+        setRefreshing(false);
+      }
     }
   };
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
+      setLoading(true);
       fetchBookings();
+      // Start polling while focused
+      if (pollRef.current) clearInterval(pollRef.current);
+      pollRef.current = setInterval(() => fetchBookings(true), POLL_INTERVAL);
     });
-    return unsubscribe;
+    const unsubscribeBlur = navigation.addListener('blur', () => {
+      if (pollRef.current) clearInterval(pollRef.current);
+    });
+    return () => {
+      unsubscribe();
+      unsubscribeBlur();
+      if (pollRef.current) clearInterval(pollRef.current);
+    };
   }, [navigation]);
 
   const onRefresh = () => {

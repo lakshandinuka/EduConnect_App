@@ -18,9 +18,12 @@ const CreateAnnouncementScreen = ({ navigation }) => {
     setSubmitting(true);
     try {
       await createAnnouncement({ title, content });
-      Alert.alert('Success', 'Announcement posted successfully!', [
-        { text: 'OK', onPress: () => navigation.goBack() },
-      ]);
+      Alert.alert(
+        'Announcement Posted',
+        'Your announcement has been posted successfully!',
+        [{ text: 'Done', onPress: () => navigation.goBack() }],
+        { cancelable: false }
+      );
     } catch (e) {
       Alert.alert('Error', 'Failed to post announcement');
     } finally {

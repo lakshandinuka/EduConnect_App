@@ -8,12 +8,17 @@ const {
   escalateTicket,
   approveTicket,
   updateTicketSLA,
+  rateTicket,
 } = require('../controllers/ticketController');
+const { exportTicketsPDF } = require('../controllers/pdfController');
 const { protect, authorize } = require('../middleware/authMiddleware');
 
 router.route('/')
   .get(protect, getTickets)
   .post(protect, authorize('student'), createTicket);
+
+// PDF export – must be declared before /:id to prevent shadowing
+router.get('/export/pdf', protect, authorize('admin'), exportTicketsPDF);
 
 router.route('/:id')
   .get(protect, getTicketById);
@@ -29,5 +34,8 @@ router.route('/:id/approve')
 
 router.route('/:id/sla')
   .put(protect, authorize('admin'), updateTicketSLA);
+
+router.route('/:id/rate')
+  .put(protect, authorize('student'), rateTicket);
 
 module.exports = router;

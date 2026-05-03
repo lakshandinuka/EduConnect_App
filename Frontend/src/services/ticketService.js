@@ -34,3 +34,8 @@ export const updateTicketSLA = async (id, slaPolicyId) => {
   const response = await api.put(`/tickets/${id}/sla`, { slaPolicyId });
   return response.data;
 };
+
+export const rateTicket = async (id, rating, ratingComment = '') => {
+  const response = await api.put(`/tickets/${id}/rate`, { rating, ratingComment });
+  return response.data;
+};

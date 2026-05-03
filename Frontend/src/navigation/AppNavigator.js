@@ -7,6 +7,7 @@ import { AuthContext } from '../context/AuthContext';
 // Screens
 import LoginScreen from '../screens/LoginScreen';
 import RegisterScreen from '../screens/RegisterScreen';
+import StaffRegisterScreen from '../screens/StaffRegisterScreen';
 
 // Dashboards
 import StudentDashboard from '../screens/StudentDashboard';
@@ -120,6 +121,7 @@ const AppNavigator = () => {
         <>
           <Stack.Screen name="Login" component={LoginScreen} options={{ headerShown: false }} />
           <Stack.Screen name="Register" component={RegisterScreen} options={{ headerShown: false }} />
+          <Stack.Screen name="StaffRegister" component={StaffRegisterScreen} options={{ headerShown: false }} />
         </>
       ) : (
         // Main App Stack (Role-Based)
@@ -129,7 +131,9 @@ const AppNavigator = () => {
           {userInfo?.role === 'admin' && <Stack.Screen name="AdminMain" component={AdminTabs} options={{ headerShown: false }} />}
           
           {/* Shared Inner Stack Screens for Staff/Admin */}
+          <Stack.Screen name="StaffRegister" component={StaffRegisterScreen} options={{ headerShown: false }} />
           <Stack.Screen name="ManageTimeSlots" component={ManageTimeSlotsScreen} options={{ title: 'Time Slots' }} />
+          <Stack.Screen name="Announcements" component={AnnouncementsScreen} options={{ title: 'Announcements' }} />
           <Stack.Screen name="CreateAnnouncement" component={CreateAnnouncementScreen} options={{ title: 'New Announcement' }} />
           <Stack.Screen name="ManageDepartments" component={ManageDepartmentsScreen} options={{ title: 'Departments' }} />
           <Stack.Screen name="ManageInquiryTypes" component={ManageInquiryTypesScreen} options={{ title: 'Inquiry Types' }} />
