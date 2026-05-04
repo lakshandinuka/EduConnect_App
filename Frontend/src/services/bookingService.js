@@ -34,3 +34,14 @@ export const updateBookingStatus = async (id, status) => {
   const response = await api.put(`/bookings/${id}/status`, { status });
   return response.data;
 };
+
+export const updateBooking = async (id, reason) => {
+  const response = await api.put(`/bookings/${id}`, { reason });
+  return response.data;
+};
+
+// Uses the existing deployed status route to cancel a student's own booking
+export const cancelBooking = async (id) => {
+  const response = await api.put(`/bookings/${id}/status`, { status: 'CANCELLED' });
+  return response.data;
+};

@@ -1,9 +1,30 @@
 import React, { useState, useEffect } from 'react';
 import {
   View, Text, FlatList, StyleSheet, TouchableOpacity,
-  ActivityIndicator, RefreshControl, Alert
+  ActivityIndicator, RefreshControl, Alert, Platform
 } from 'react-native';
 import { getAllBookings, updateBookingStatus } from '../services/bookingService';
+
+const showAlert = (title, message) => {
+  if (Platform.OS === 'web') {
+    window.alert(`${title}\n${message || ''}`);
+  } else {
+    Alert.alert(title, message);
+  }
+};
+
+const showConfirm = (title, message, onConfirm) => {
+  if (Platform.OS === 'web') {
+    if (window.confirm(`${title}\n${message}`)) {
+      onConfirm();
+    }
+  } else {
+    Alert.alert(title, message, [
+      { text: 'Cancel', style: 'cancel' },
+      { text: 'Yes', onPress: onConfirm },
+    ]);
+  }
+};
 
 const getStatusColor = (status) => {
   switch (status) {
@@ -25,7 +46,7 @@ const ManageBookingsScreen = () => {
       const data = await getAllBookings();
       setBookings(data);
     } catch (e) {
-      Alert.alert('Error', 'Failed to load bookings');
+      showAlert('Error', 'Failed to load bookings');
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -35,23 +56,17 @@ const ManageBookingsScreen = () => {
   useEffect(() => { fetchBookings(); }, []);
 
   const handleStatus = async (id, status) => {
-    Alert.alert(
+    showConfirm(
       'Confirm',
       `Are you sure you want to ${status.toLowerCase()} this booking?`,
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Yes',
-          onPress: async () => {
-            try {
-              await updateBookingStatus(id, status);
-              fetchBookings();
-            } catch (e) {
-              Alert.alert('Error', 'Could not update booking');
-            }
-          },
-        },
-      ]
+      async () => {
+        try {
+          await updateBookingStatus(id, status);
+          fetchBookings();
+        } catch (e) {
+          showAlert('Error', 'Could not update booking');
+        }
+      }
     );
   };
 
