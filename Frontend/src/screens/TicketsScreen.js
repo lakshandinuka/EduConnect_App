@@ -105,7 +105,13 @@ const TicketsScreen = ({ navigation }) => {
   const fetchTickets = async (silent = false) => {
     try {
       const data = await getTickets();
-      setTickets(data);
+      if (userInfo?.role === 'staff') {
+        // Staff only see non-solved tickets
+        const filtered = data.filter(t => t.status !== 'RESOLVED' && t.status !== 'CLOSED');
+        setTickets(filtered);
+      } else {
+        setTickets(data);
+      }
     } catch (error) {
       console.log('Error fetching tickets', error);
     } finally {

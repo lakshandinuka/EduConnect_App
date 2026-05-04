@@ -10,6 +10,8 @@ import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
+  Keyboard,
+  TouchableWithoutFeedback,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { AuthContext } from '../context/AuthContext';
@@ -33,95 +35,97 @@ const LoginScreen = ({ navigation }) => {
   };
 
   return (
-    <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
-      <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+      <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+        <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
 
-        {/* Logo / Branding */}
-        <View style={styles.brandContainer}>
-          <View style={styles.logoCircle}>
-            <Ionicons name="school" size={42} color="#3498DB" />
-          </View>
-          <Text style={styles.title}>EduConnect</Text>
-          <Text style={styles.subtitle}>Sign in to continue</Text>
-        </View>
-
-        {/* Form Card */}
-        <View style={styles.card}>
-          <View style={styles.inputWrapper}>
-            <Ionicons name="mail-outline" size={18} color="#7F8C8D" style={styles.inputIcon} />
-            <TextInput
-              style={styles.input}
-              placeholder="Email Address"
-              placeholderTextColor="#BDC3C7"
-              value={email}
-              onChangeText={setEmail}
-              keyboardType="email-address"
-              autoCapitalize="none"
-            />
+          {/* Logo / Branding */}
+          <View style={styles.brandContainer}>
+            <View style={styles.logoCircle}>
+              <Ionicons name="school" size={42} color="#3498DB" />
+            </View>
+            <Text style={styles.title}>EduConnect</Text>
+            <Text style={styles.subtitle}>Sign in to continue</Text>
           </View>
 
-          <View style={[styles.inputWrapper, { marginBottom: 0 }]}>
-            <Ionicons name="lock-closed-outline" size={18} color="#7F8C8D" style={styles.inputIcon} />
-            <TextInput
-              style={[styles.input, { flex: 1 }]}
-              placeholder="Password"
-              placeholderTextColor="#BDC3C7"
-              value={password}
-              onChangeText={setPassword}
-              secureTextEntry={!showPassword}
-            />
-            <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={styles.eyeBtn}>
-              <Ionicons name={showPassword ? 'eye-off-outline' : 'eye-outline'} size={18} color="#7F8C8D" />
+          {/* Form Card */}
+          <View style={styles.card}>
+            <View style={styles.inputWrapper}>
+              <Ionicons name="mail-outline" size={18} color="#7F8C8D" style={styles.inputIcon} />
+              <TextInput
+                style={styles.input}
+                placeholder="Email Address"
+                placeholderTextColor="#BDC3C7"
+                value={email}
+                onChangeText={setEmail}
+                keyboardType="email-address"
+                autoCapitalize="none"
+              />
+            </View>
+
+            <View style={[styles.inputWrapper, { marginBottom: 0 }]}>
+              <Ionicons name="lock-closed-outline" size={18} color="#7F8C8D" style={styles.inputIcon} />
+              <TextInput
+                style={[styles.input, { flex: 1 }]}
+                placeholder="Password"
+                placeholderTextColor="#BDC3C7"
+                value={password}
+                onChangeText={setPassword}
+                secureTextEntry={!showPassword}
+              />
+              <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={styles.eyeBtn}>
+                <Ionicons name={showPassword ? 'eye-off-outline' : 'eye-outline'} size={18} color="#7F8C8D" />
+              </TouchableOpacity>
+            </View>
+          </View>
+
+          {/* Login Button */}
+          <TouchableOpacity
+            style={[styles.button, isLoading && styles.buttonDisabled]}
+            onPress={handleLogin}
+            disabled={isLoading}
+            activeOpacity={0.85}
+          >
+            {isLoading ? (
+              <ActivityIndicator color="#fff" />
+            ) : (
+              <Text style={styles.buttonText}>Sign In</Text>
+            )}
+          </TouchableOpacity>
+
+          {/* Student Register */}
+          <View style={styles.footer}>
+            <Text style={styles.footerText}>Don't have an account? </Text>
+            <TouchableOpacity onPress={() => navigation.navigate('Register')}>
+              <Text style={styles.link}>Student Sign Up</Text>
             </TouchableOpacity>
           </View>
-        </View>
 
-        {/* Login Button */}
-        <TouchableOpacity
-          style={[styles.button, isLoading && styles.buttonDisabled]}
-          onPress={handleLogin}
-          disabled={isLoading}
-          activeOpacity={0.85}
-        >
-          {isLoading ? (
-            <ActivityIndicator color="#fff" />
-          ) : (
-            <Text style={styles.buttonText}>Sign In</Text>
-          )}
-        </TouchableOpacity>
+          {/* Divider */}
+          <View style={styles.dividerRow}>
+            <View style={styles.dividerLine} />
+            <Text style={styles.dividerText}>or</Text>
+            <View style={styles.dividerLine} />
+          </View>
 
-        {/* Student Register */}
-        <View style={styles.footer}>
-          <Text style={styles.footerText}>Don't have an account? </Text>
-          <TouchableOpacity onPress={() => navigation.navigate('Register')}>
-            <Text style={styles.link}>Student Sign Up</Text>
+          {/* Staff / Admin Portal Button */}
+          <TouchableOpacity
+            style={styles.staffPortalBtn}
+            onPress={() => navigation.navigate('StaffRegister')}
+            activeOpacity={0.85}
+          >
+            <Ionicons name="shield-checkmark-outline" size={18} color="#8E44AD" style={{ marginRight: 8 }} />
+            <Text style={styles.staffPortalText}>Staff / Admin Registration Portal</Text>
+            <Ionicons name="chevron-forward" size={16} color="#8E44AD" />
           </TouchableOpacity>
-        </View>
 
-        {/* Divider */}
-        <View style={styles.dividerRow}>
-          <View style={styles.dividerLine} />
-          <Text style={styles.dividerText}>or</Text>
-          <View style={styles.dividerLine} />
-        </View>
+          <Text style={styles.staffPortalHint}>
+            For administrators adding new staff or admin accounts
+          </Text>
 
-        {/* Staff / Admin Portal Button */}
-        <TouchableOpacity
-          style={styles.staffPortalBtn}
-          onPress={() => navigation.navigate('StaffRegister')}
-          activeOpacity={0.85}
-        >
-          <Ionicons name="shield-checkmark-outline" size={18} color="#8E44AD" style={{ marginRight: 8 }} />
-          <Text style={styles.staffPortalText}>Staff / Admin Registration Portal</Text>
-          <Ionicons name="chevron-forward" size={16} color="#8E44AD" />
-        </TouchableOpacity>
-
-        <Text style={styles.staffPortalHint}>
-          For administrators adding new staff or admin accounts
-        </Text>
-
-      </ScrollView>
-    </KeyboardAvoidingView>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </TouchableWithoutFeedback>
   );
 };
 

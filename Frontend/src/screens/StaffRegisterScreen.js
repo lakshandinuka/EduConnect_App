@@ -8,8 +8,9 @@ import {
   ActivityIndicator,
   Alert,
   ScrollView,
-  KeyboardAvoidingView,
   Platform,
+  Keyboard,
+  TouchableWithoutFeedback,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { AuthContext } from '../context/AuthContext';
@@ -58,159 +59,161 @@ const StaffRegisterScreen = ({ navigation }) => {
   };
 
   return (
-    <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
-      <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+      <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+        <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
 
-        {/* Header */}
-        <View style={styles.header}>
-          <TouchableOpacity style={styles.backBtn} onPress={() => navigation.goBack()}>
-            <Ionicons name="arrow-back" size={22} color="#2C3E50" />
-          </TouchableOpacity>
-          <View style={styles.headerBadge}>
-            <Ionicons name="shield-checkmark" size={36} color="#8E44AD" />
+          {/* Header */}
+          <View style={styles.header}>
+            <TouchableOpacity style={styles.backBtn} onPress={() => navigation.goBack()}>
+              <Ionicons name="arrow-back" size={22} color="#2C3E50" />
+            </TouchableOpacity>
+            <View style={styles.headerBadge}>
+              <Ionicons name="shield-checkmark" size={36} color="#8E44AD" />
+            </View>
+            <Text style={styles.title}>Staff / Admin Portal</Text>
+            <Text style={styles.subtitle}>
+              Create an account for a team member.{'\n'}This form is restricted to Administrators.
+            </Text>
           </View>
-          <Text style={styles.title}>Staff / Admin Portal</Text>
-          <Text style={styles.subtitle}>
-            Create an account for a team member.{'\n'}This form is restricted to Administrators.
-          </Text>
-        </View>
 
-        {/* Role Selector */}
-        <Text style={styles.sectionLabel}>Select Role</Text>
-        <View style={styles.roleRow}>
-          {ROLES.map((r) => (
-            <TouchableOpacity
-              key={r.key}
-              style={[
-                styles.roleCard,
-                selectedRole === r.key && { borderColor: r.color, backgroundColor: r.color + '18' },
-              ]}
-              onPress={() => setSelectedRole(r.key)}
-              activeOpacity={0.8}
-            >
-              <Ionicons
-                name={r.icon}
-                size={28}
-                color={selectedRole === r.key ? r.color : '#BDC3C7'}
+          {/* Role Selector */}
+          <Text style={styles.sectionLabel}>Select Role</Text>
+          <View style={styles.roleRow}>
+            {ROLES.map((r) => (
+              <TouchableOpacity
+                key={r.key}
+                style={[
+                  styles.roleCard,
+                  selectedRole === r.key && { borderColor: r.color, backgroundColor: r.color + '18' },
+                ]}
+                onPress={() => setSelectedRole(r.key)}
+                activeOpacity={0.8}
+              >
+                <Ionicons
+                  name={r.icon}
+                  size={28}
+                  color={selectedRole === r.key ? r.color : '#BDC3C7'}
+                />
+                <Text style={[styles.roleLabel, selectedRole === r.key && { color: r.color, fontWeight: '700' }]}>
+                  {r.label}
+                </Text>
+                {selectedRole === r.key && (
+                  <Ionicons name="checkmark-circle" size={18} color={r.color} style={styles.roleCheck} />
+                )}
+              </TouchableOpacity>
+            ))}
+          </View>
+
+          {/* Form */}
+          <Text style={styles.sectionLabel}>Account Details</Text>
+          <View style={styles.card}>
+            {/* Name */}
+            <View style={styles.inputWrapper}>
+              <Ionicons name="person-outline" size={18} color="#7F8C8D" style={styles.inputIcon} />
+              <TextInput
+                style={styles.input}
+                placeholder="Full Name *"
+                placeholderTextColor="#BDC3C7"
+                value={name}
+                onChangeText={setName}
               />
-              <Text style={[styles.roleLabel, selectedRole === r.key && { color: r.color, fontWeight: '700' }]}>
-                {r.label}
-              </Text>
-              {selectedRole === r.key && (
-                <Ionicons name="checkmark-circle" size={18} color={r.color} style={styles.roleCheck} />
-              )}
-            </TouchableOpacity>
-          ))}
-        </View>
+            </View>
 
-        {/* Form */}
-        <Text style={styles.sectionLabel}>Account Details</Text>
-        <View style={styles.card}>
-          {/* Name */}
-          <View style={styles.inputWrapper}>
-            <Ionicons name="person-outline" size={18} color="#7F8C8D" style={styles.inputIcon} />
-            <TextInput
-              style={styles.input}
-              placeholder="Full Name *"
-              placeholderTextColor="#BDC3C7"
-              value={name}
-              onChangeText={setName}
-            />
+            {/* Email */}
+            <View style={styles.inputWrapper}>
+              <Ionicons name="mail-outline" size={18} color="#7F8C8D" style={styles.inputIcon} />
+              <TextInput
+                style={styles.input}
+                placeholder="Email Address *"
+                placeholderTextColor="#BDC3C7"
+                value={email}
+                onChangeText={setEmail}
+                keyboardType="email-address"
+                autoCapitalize="none"
+              />
+            </View>
+
+            {/* Department */}
+            <View style={styles.inputWrapper}>
+              <Ionicons name="business-outline" size={18} color="#7F8C8D" style={styles.inputIcon} />
+              <TextInput
+                style={styles.input}
+                placeholder="Department (optional)"
+                placeholderTextColor="#BDC3C7"
+                value={department}
+                onChangeText={setDepartment}
+              />
+            </View>
+
+            {/* Password */}
+            <View style={styles.inputWrapper}>
+              <Ionicons name="lock-closed-outline" size={18} color="#7F8C8D" style={styles.inputIcon} />
+              <TextInput
+                style={[styles.input, styles.inputFlex]}
+                placeholder="Password *"
+                placeholderTextColor="#BDC3C7"
+                value={password}
+                onChangeText={setPassword}
+                secureTextEntry={!showPassword}
+              />
+              <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={styles.eyeBtn}>
+                <Ionicons name={showPassword ? 'eye-off-outline' : 'eye-outline'} size={18} color="#7F8C8D" />
+              </TouchableOpacity>
+            </View>
+
+            {/* Confirm Password */}
+            <View style={[styles.inputWrapper, { marginBottom: 0 }]}>
+              <Ionicons name="lock-closed-outline" size={18} color="#7F8C8D" style={styles.inputIcon} />
+              <TextInput
+                style={[styles.input, styles.inputFlex]}
+                placeholder="Confirm Password *"
+                placeholderTextColor="#BDC3C7"
+                value={confirmPassword}
+                onChangeText={setConfirmPassword}
+                secureTextEntry={!showPassword}
+              />
+            </View>
           </View>
 
-          {/* Email */}
-          <View style={styles.inputWrapper}>
-            <Ionicons name="mail-outline" size={18} color="#7F8C8D" style={styles.inputIcon} />
-            <TextInput
-              style={styles.input}
-              placeholder="Email Address *"
-              placeholderTextColor="#BDC3C7"
-              value={email}
-              onChangeText={setEmail}
-              keyboardType="email-address"
-              autoCapitalize="none"
-            />
+          {/* Notice */}
+          <View style={styles.notice}>
+            <Ionicons name="information-circle-outline" size={16} color="#8E44AD" />
+            <Text style={styles.noticeText}>
+              You must be logged in as an Administrator to create staff or admin accounts.
+            </Text>
           </View>
 
-          {/* Department */}
-          <View style={styles.inputWrapper}>
-            <Ionicons name="business-outline" size={18} color="#7F8C8D" style={styles.inputIcon} />
-            <TextInput
-              style={styles.input}
-              placeholder="Department (optional)"
-              placeholderTextColor="#BDC3C7"
-              value={department}
-              onChangeText={setDepartment}
-            />
-          </View>
-
-          {/* Password */}
-          <View style={styles.inputWrapper}>
-            <Ionicons name="lock-closed-outline" size={18} color="#7F8C8D" style={styles.inputIcon} />
-            <TextInput
-              style={[styles.input, styles.inputFlex]}
-              placeholder="Password *"
-              placeholderTextColor="#BDC3C7"
-              value={password}
-              onChangeText={setPassword}
-              secureTextEntry={!showPassword}
-            />
-            <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={styles.eyeBtn}>
-              <Ionicons name={showPassword ? 'eye-off-outline' : 'eye-outline'} size={18} color="#7F8C8D" />
-            </TouchableOpacity>
-          </View>
-
-          {/* Confirm Password */}
-          <View style={[styles.inputWrapper, { marginBottom: 0 }]}>
-            <Ionicons name="lock-closed-outline" size={18} color="#7F8C8D" style={styles.inputIcon} />
-            <TextInput
-              style={[styles.input, styles.inputFlex]}
-              placeholder="Confirm Password *"
-              placeholderTextColor="#BDC3C7"
-              value={confirmPassword}
-              onChangeText={setConfirmPassword}
-              secureTextEntry={!showPassword}
-            />
-          </View>
-        </View>
-
-        {/* Notice */}
-        <View style={styles.notice}>
-          <Ionicons name="information-circle-outline" size={16} color="#8E44AD" />
-          <Text style={styles.noticeText}>
-            You must be logged in as an Administrator to create staff or admin accounts.
-          </Text>
-        </View>
-
-        {/* Submit */}
-        <TouchableOpacity
-          style={[styles.button, isLoading && styles.buttonDisabled]}
-          onPress={handleRegister}
-          disabled={isLoading}
-          activeOpacity={0.85}
-        >
-          {isLoading ? (
-            <ActivityIndicator color="#fff" />
-          ) : (
-            <>
-              <Ionicons name="person-add-outline" size={20} color="#fff" style={{ marginRight: 8 }} />
-              <Text style={styles.buttonText}>
-                Create {selectedRole === 'admin' ? 'Administrator' : 'Staff'} Account
-              </Text>
-            </>
-          )}
-        </TouchableOpacity>
-
-        {/* Footer */}
-        <View style={styles.footer}>
-          <Text style={styles.footerText}>Registering as a student? </Text>
-          <TouchableOpacity onPress={() => navigation.navigate('Register')}>
-            <Text style={styles.link}>Student Sign Up</Text>
+          {/* Submit */}
+          <TouchableOpacity
+            style={[styles.button, isLoading && styles.buttonDisabled]}
+            onPress={handleRegister}
+            disabled={isLoading}
+            activeOpacity={0.85}
+          >
+            {isLoading ? (
+              <ActivityIndicator color="#fff" />
+            ) : (
+              <>
+                <Ionicons name="person-add-outline" size={20} color="#fff" style={{ marginRight: 8 }} />
+                <Text style={styles.buttonText}>
+                  Create {selectedRole === 'admin' ? 'Administrator' : 'Staff'} Account
+                </Text>
+              </>
+            )}
           </TouchableOpacity>
-        </View>
 
-      </ScrollView>
-    </KeyboardAvoidingView>
+          {/* Footer */}
+          <View style={styles.footer}>
+            <Text style={styles.footerText}>Registering as a student? </Text>
+            <TouchableOpacity onPress={() => navigation.navigate('Register')}>
+              <Text style={styles.link}>Student Sign Up</Text>
+            </TouchableOpacity>
+          </View>
+
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </TouchableWithoutFeedback>
   );
 };
 

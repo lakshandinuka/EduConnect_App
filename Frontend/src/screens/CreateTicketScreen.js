@@ -8,8 +8,9 @@ import {
   ActivityIndicator,
   Alert,
   ScrollView,
-  KeyboardAvoidingView,
   Platform,
+  Keyboard,
+  TouchableWithoutFeedback,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { createTicket } from '../services/ticketService';
@@ -107,158 +108,160 @@ const CreateTicketScreen = ({ navigation }) => {
   }
 
   return (
-    <KeyboardAvoidingView
-      style={styles.flex}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-    >
-      <ScrollView
-        style={styles.container}
-        contentContainerStyle={styles.contentContainer}
-        keyboardShouldPersistTaps="handled"
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+      <KeyboardAvoidingView
+        style={styles.flex}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       >
-        {/* Title */}
-        <Text style={styles.label}>
-          Title <Text style={styles.required}>*</Text>
-        </Text>
-        <View style={styles.inputWrapper}>
-          <Ionicons name="document-text-outline" size={18} color="#7F8C8D" style={styles.inputIcon} />
-          <TextInput
-            style={styles.input}
-            placeholder="Brief subject of your issue"
-            placeholderTextColor="#BDC3C7"
-            value={title}
-            onChangeText={setTitle}
-          />
-        </View>
-
-        {/* Department */}
-        <Text style={styles.label}>
-          Department <Text style={styles.required}>*</Text>
-        </Text>
-        {departments.length === 0 ? (
-          <View style={styles.emptyNotice}>
-            <Ionicons name="alert-circle-outline" size={16} color="#E67E22" />
-            <Text style={styles.emptyNoticeText}>
-              No departments found. Ask an admin to add departments first.
-            </Text>
-          </View>
-        ) : (
-          <View style={styles.chipGrid}>
-            {departments.map((dept) => (
-              <TouchableOpacity
-                key={dept._id}
-                style={[
-                  styles.chip,
-                  department?._id === dept._id && styles.chipSelected,
-                ]}
-                onPress={() => setDepartment(dept)}
-                activeOpacity={0.7}
-              >
-                <Ionicons
-                  name="business-outline"
-                  size={14}
-                  color={department?._id === dept._id ? '#fff' : '#3498DB'}
-                  style={{ marginRight: 5 }}
-                />
-                <Text
-                  style={[
-                    styles.chipText,
-                    department?._id === dept._id && styles.chipTextSelected,
-                  ]}
-                >
-                  {dept.name}
-                </Text>
-              </TouchableOpacity>
-            ))}
-          </View>
-        )}
-
-        {/* Inquiry Type */}
-        <Text style={styles.label}>
-          Inquiry Type <Text style={styles.required}>*</Text>
-        </Text>
-        {inquiryTypes.length === 0 ? (
-          <View style={styles.emptyNotice}>
-            <Ionicons name="alert-circle-outline" size={16} color="#E67E22" />
-            <Text style={styles.emptyNoticeText}>
-              No inquiry types found. Ask an admin to add inquiry types first.
-            </Text>
-          </View>
-        ) : (
-          <View style={styles.chipGrid}>
-            {inquiryTypes.map((inq) => (
-              <TouchableOpacity
-                key={inq._id}
-                style={[
-                  styles.chip,
-                  inquiryType?._id === inq._id && styles.chipSelected,
-                ]}
-                onPress={() => setInquiryType(inq)}
-                activeOpacity={0.7}
-              >
-                <Ionicons
-                  name="help-circle-outline"
-                  size={14}
-                  color={inquiryType?._id === inq._id ? '#fff' : '#3498DB'}
-                  style={{ marginRight: 5 }}
-                />
-                <Text
-                  style={[
-                    styles.chipText,
-                    inquiryType?._id === inq._id && styles.chipTextSelected,
-                  ]}
-                >
-                  {inq.name}
-                </Text>
-              </TouchableOpacity>
-            ))}
-          </View>
-        )}
-
-        {/* Description */}
-        <Text style={styles.label}>
-          Description <Text style={styles.required}>*</Text>
-        </Text>
-        <TextInput
-          style={[styles.inputBare, styles.textArea]}
-          placeholder="Provide detailed information about your issue..."
-          placeholderTextColor="#BDC3C7"
-          value={description}
-          onChangeText={setDescription}
-          multiline
-          textAlignVertical="top"
-        />
-
-        {/* Summary preview strip */}
-        {(department || inquiryType) && (
-          <View style={styles.summaryStrip}>
-            <Ionicons name="checkmark-circle" size={16} color="#27AE60" />
-            <Text style={styles.summaryText}>
-              {department?.name ?? '—'} · {inquiryType?.name ?? '—'}
-            </Text>
-          </View>
-        )}
-
-        {/* Submit */}
-        <TouchableOpacity
-          style={[styles.button, submitting && styles.buttonDisabled]}
-          onPress={handleSubmit}
-          disabled={submitting}
-          activeOpacity={0.85}
+        <ScrollView
+          style={styles.container}
+          contentContainerStyle={styles.contentContainer}
+          keyboardShouldPersistTaps="handled"
         >
-          {submitting ? (
-            <ActivityIndicator color="#FFF" />
-          ) : (
-            <>
-              <Ionicons name="send-outline" size={18} color="#fff" style={{ marginRight: 8 }} />
-              <Text style={styles.buttonText}>Submit Ticket</Text>
-            </>
-          )}
-        </TouchableOpacity>
+          {/* Title */}
+          <Text style={styles.label}>
+            Title <Text style={styles.required}>*</Text>
+          </Text>
+          <View style={styles.inputWrapper}>
+            <Ionicons name="document-text-outline" size={18} color="#7F8C8D" style={styles.inputIcon} />
+            <TextInput
+              style={styles.input}
+              placeholder="Brief subject of your issue"
+              placeholderTextColor="#BDC3C7"
+              value={title}
+              onChangeText={setTitle}
+            />
+          </View>
 
-        <View style={{ height: 40 }} />
-      </ScrollView>
-    </KeyboardAvoidingView>
+          {/* Department */}
+          <Text style={styles.label}>
+            Department <Text style={styles.required}>*</Text>
+          </Text>
+          {departments.length === 0 ? (
+            <View style={styles.emptyNotice}>
+              <Ionicons name="alert-circle-outline" size={16} color="#E67E22" />
+              <Text style={styles.emptyNoticeText}>
+                No departments found. Ask an admin to add departments first.
+              </Text>
+            </View>
+          ) : (
+            <View style={styles.chipGrid}>
+              {departments.map((dept) => (
+                <TouchableOpacity
+                  key={dept._id}
+                  style={[
+                    styles.chip,
+                    department?._id === dept._id && styles.chipSelected,
+                  ]}
+                  onPress={() => setDepartment(dept)}
+                  activeOpacity={0.7}
+                >
+                  <Ionicons
+                    name="business-outline"
+                    size={14}
+                    color={department?._id === dept._id ? '#fff' : '#3498DB'}
+                    style={{ marginRight: 5 }}
+                  />
+                  <Text
+                    style={[
+                      styles.chipText,
+                      department?._id === dept._id && styles.chipTextSelected,
+                    ]}
+                  >
+                    {dept.name}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+          )}
+
+          {/* Inquiry Type */}
+          <Text style={styles.label}>
+            Inquiry Type <Text style={styles.required}>*</Text>
+          </Text>
+          {inquiryTypes.length === 0 ? (
+            <View style={styles.emptyNotice}>
+              <Ionicons name="alert-circle-outline" size={16} color="#E67E22" />
+              <Text style={styles.emptyNoticeText}>
+                No inquiry types found. Ask an admin to add inquiry types first.
+              </Text>
+            </View>
+          ) : (
+            <View style={styles.chipGrid}>
+              {inquiryTypes.map((inq) => (
+                <TouchableOpacity
+                  key={inq._id}
+                  style={[
+                    styles.chip,
+                    inquiryType?._id === inq._id && styles.chipSelected,
+                  ]}
+                  onPress={() => setInquiryType(inq)}
+                  activeOpacity={0.7}
+                >
+                  <Ionicons
+                    name="help-circle-outline"
+                    size={14}
+                    color={inquiryType?._id === inq._id ? '#fff' : '#3498DB'}
+                    style={{ marginRight: 5 }}
+                  />
+                  <Text
+                    style={[
+                      styles.chipText,
+                      inquiryType?._id === inq._id && styles.chipTextSelected,
+                    ]}
+                  >
+                    {inq.name}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+          )}
+
+          {/* Description */}
+          <Text style={styles.label}>
+            Description <Text style={styles.required}>*</Text>
+          </Text>
+          <TextInput
+            style={[styles.inputBare, styles.textArea]}
+            placeholder="Provide detailed information about your issue..."
+            placeholderTextColor="#BDC3C7"
+            value={description}
+            onChangeText={setDescription}
+            multiline
+            textAlignVertical="top"
+          />
+
+          {/* Summary preview strip */}
+          {(department || inquiryType) && (
+            <View style={styles.summaryStrip}>
+              <Ionicons name="checkmark-circle" size={16} color="#27AE60" />
+              <Text style={styles.summaryText}>
+                {department?.name ?? '—'} · {inquiryType?.name ?? '—'}
+              </Text>
+            </View>
+          )}
+
+          {/* Submit */}
+          <TouchableOpacity
+            style={[styles.button, submitting && styles.buttonDisabled]}
+            onPress={handleSubmit}
+            disabled={submitting}
+            activeOpacity={0.85}
+          >
+            {submitting ? (
+              <ActivityIndicator color="#FFF" />
+            ) : (
+              <>
+                <Ionicons name="send-outline" size={18} color="#fff" style={{ marginRight: 8 }} />
+                <Text style={styles.buttonText}>Submit Ticket</Text>
+              </>
+            )}
+          </TouchableOpacity>
+
+          <View style={{ height: 40 }} />
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </TouchableWithoutFeedback>
   );
 };
 
