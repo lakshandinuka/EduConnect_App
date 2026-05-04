@@ -8,6 +8,7 @@ import {
   ActivityIndicator,
   Alert,
   ScrollView,
+  KeyboardAvoidingView,
   Platform,
   Keyboard,
   TouchableWithoutFeedback,
