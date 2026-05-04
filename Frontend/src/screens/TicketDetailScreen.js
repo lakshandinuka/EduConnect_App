@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import {
   View, Text, TextInput, TouchableOpacity, StyleSheet,
-  ActivityIndicator, FlatList, Alert, ScrollView, Modal
+  ActivityIndicator, FlatList, Alert, ScrollView, Modal, Keyboard, TouchableWithoutFeedback
 } from 'react-native';
 import {
   getTicketById, addTicketComment, escalateTicket,
@@ -91,6 +91,10 @@ const TicketDetailScreen = ({ route, navigation }) => {
   };
 
   const handleEscalate = async () => {
+    if (!note.trim()) {
+      Alert.alert('Comment Required', 'Please provide a reason for escalating this ticket.');
+      return;
+    }
     setSubmitting(true);
     try {
       const updated = await escalateTicket(ticketId, note);
@@ -312,108 +316,114 @@ const TicketDetailScreen = ({ route, navigation }) => {
 
       {/* ── Rating Modal ── */}
       <Modal visible={ratingModal} transparent animationType="slide">
-        <View style={styles.modalOverlay}>
-          <View style={[styles.modalContent, styles.ratingModalContent]}>
-            <Text style={styles.modalTitle}>Rate Your Experience</Text>
-            <Text style={styles.ratingSubtitle}>Tap a star to rate your satisfaction</Text>
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+          <View style={styles.modalOverlay}>
+            <View style={[styles.modalContent, styles.ratingModalContent]}>
+              <Text style={styles.modalTitle}>Rate Your Experience</Text>
+              <Text style={styles.ratingSubtitle}>Tap a star to rate your satisfaction</Text>
 
-            <StarRating value={selectedRating} onChange={setSelectedRating} size={40} />
+              <StarRating value={selectedRating} onChange={setSelectedRating} size={40} />
 
-            <Text style={styles.ratingLabel}>
-              {selectedRating === 0 ? 'Select a rating' :
-               selectedRating === 1 ? '😞 Very Unsatisfied' :
-               selectedRating === 2 ? '😐 Unsatisfied' :
-               selectedRating === 3 ? '🙂 Neutral' :
-               selectedRating === 4 ? '😊 Satisfied' :
-               '🤩 Very Satisfied'}
-            </Text>
+              <Text style={styles.ratingLabel}>
+                {selectedRating === 0 ? 'Select a rating' :
+                 selectedRating === 1 ? '😞 Very Unsatisfied' :
+                 selectedRating === 2 ? '😐 Unsatisfied' :
+                 selectedRating === 3 ? '🙂 Neutral' :
+                 selectedRating === 4 ? '😊 Satisfied' :
+                 '🤩 Very Satisfied'}
+              </Text>
 
-            <TextInput
-              style={styles.ratingInput}
-              placeholder="Optional: share more about your experience..."
-              value={ratingComment}
-              onChangeText={setRatingComment}
-              multiline
-              numberOfLines={3}
-            />
+              <TextInput
+                style={styles.ratingInput}
+                placeholder="Optional: share more about your experience..."
+                value={ratingComment}
+                onChangeText={setRatingComment}
+                multiline
+                numberOfLines={3}
+              />
 
-            <View style={styles.modalRow}>
-              <TouchableOpacity style={styles.modalCancel} onPress={() => setRatingModal(false)}>
-                <Text style={{ color: '#7F8C8D', fontWeight: '600' }}>Cancel</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={[styles.modalSubmit, styles.ratingSubmitBtn, selectedRating === 0 && styles.disabledBtn]}
-                onPress={handleSubmitRating}
-                disabled={submitting || selectedRating === 0}
-              >
-                {submitting ? (
-                  <ActivityIndicator color="#FFF" size="small" />
-                ) : (
-                  <Text style={{ color: '#FFF', fontWeight: 'bold' }}>Submit Rating</Text>
-                )}
-              </TouchableOpacity>
+              <View style={styles.modalRow}>
+                <TouchableOpacity style={styles.modalCancel} onPress={() => setRatingModal(false)}>
+                  <Text style={{ color: '#7F8C8D', fontWeight: '600' }}>Cancel</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={[styles.modalSubmit, styles.ratingSubmitBtn, selectedRating === 0 && styles.disabledBtn]}
+                  onPress={handleSubmitRating}
+                  disabled={submitting || selectedRating === 0}
+                >
+                  {submitting ? (
+                    <ActivityIndicator color="#FFF" size="small" />
+                  ) : (
+                    <Text style={{ color: '#FFF', fontWeight: 'bold' }}>Submit Rating</Text>
+                  )}
+                </TouchableOpacity>
+              </View>
             </View>
           </View>
-        </View>
+        </TouchableWithoutFeedback>
       </Modal>
 
       {/* ── Escalate Modal ── */}
       <Modal visible={escalateModal} transparent animationType="fade">
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Escalate Ticket</Text>
-            <TextInput
-              style={styles.modalInput}
-              placeholder="Reason for escalation..."
-              value={note}
-              onChangeText={setNote}
-              multiline
-            />
-            <View style={styles.modalRow}>
-              <TouchableOpacity style={styles.modalCancel} onPress={() => setEscalateModal(false)}>
-                <Text>Cancel</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.modalSubmit} onPress={handleEscalate}>
-                <Text style={{ color: '#FFF' }}>Escalate</Text>
-              </TouchableOpacity>
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+          <View style={styles.modalOverlay}>
+            <View style={styles.modalContent}>
+              <Text style={styles.modalTitle}>Escalate Ticket</Text>
+              <TextInput
+                style={styles.modalInput}
+                placeholder="Reason for escalation..."
+                value={note}
+                onChangeText={setNote}
+                multiline
+              />
+              <View style={styles.modalRow}>
+                <TouchableOpacity style={styles.modalCancel} onPress={() => setEscalateModal(false)}>
+                  <Text>Cancel</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.modalSubmit} onPress={handleEscalate}>
+                  <Text style={{ color: '#FFF' }}>Escalate</Text>
+                </TouchableOpacity>
+              </View>
             </View>
           </View>
-        </View>
+        </TouchableWithoutFeedback>
       </Modal>
 
       {/* ── Approve Modal ── */}
       <Modal visible={approveModal} transparent animationType="fade">
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Update Ticket Status</Text>
-            <View style={styles.statusRow}>
-              {['RESOLVED', 'CLOSED', 'IN_PROGRESS'].map(s => (
-                <TouchableOpacity
-                  key={s}
-                  style={[styles.statusBtn, selectedStatus === s && styles.statusBtnActive]}
-                  onPress={() => setSelectedStatus(s)}
-                >
-                  <Text style={[styles.statusBtnText, selectedStatus === s && styles.statusBtnTextActive]}>{s}</Text>
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+          <View style={styles.modalOverlay}>
+            <View style={styles.modalContent}>
+              <Text style={styles.modalTitle}>Update Ticket Status</Text>
+              <View style={styles.statusRow}>
+                {['RESOLVED', 'CLOSED', 'IN_PROGRESS'].map(s => (
+                  <TouchableOpacity
+                    key={s}
+                    style={[styles.statusBtn, selectedStatus === s && styles.statusBtnActive]}
+                    onPress={() => setSelectedStatus(s)}
+                  >
+                    <Text style={[styles.statusBtnText, selectedStatus === s && styles.statusBtnTextActive]}>{s}</Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+              <TextInput
+                style={styles.modalInput}
+                placeholder="Admin note..."
+                value={note}
+                onChangeText={setNote}
+                multiline
+              />
+              <View style={styles.modalRow}>
+                <TouchableOpacity style={styles.modalCancel} onPress={() => setApproveModal(false)}>
+                  <Text>Cancel</Text>
                 </TouchableOpacity>
-              ))}
-            </View>
-            <TextInput
-              style={styles.modalInput}
-              placeholder="Admin note..."
-              value={note}
-              onChangeText={setNote}
-              multiline
-            />
-            <View style={styles.modalRow}>
-              <TouchableOpacity style={styles.modalCancel} onPress={() => setApproveModal(false)}>
-                <Text>Cancel</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.modalSubmit} onPress={handleApprove}>
-                <Text style={{ color: '#FFF' }}>Update</Text>
-              </TouchableOpacity>
+                <TouchableOpacity style={styles.modalSubmit} onPress={handleApprove}>
+                  <Text style={{ color: '#FFF' }}>Update</Text>
+                </TouchableOpacity>
+              </View>
             </View>
           </View>
-        </View>
+        </TouchableWithoutFeedback>
       </Modal>
 
       {/* ── SLA Modal ── */}

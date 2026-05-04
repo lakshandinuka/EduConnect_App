@@ -1,5 +1,5 @@
 import React, { useState, useContext } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, ActivityIndicator, Alert } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, ActivityIndicator, Alert, Keyboard, TouchableWithoutFeedback } from 'react-native';
 import { AuthContext } from '../context/AuthContext';
 
 const RegisterScreen = ({ navigation }) => {
@@ -21,49 +21,51 @@ const RegisterScreen = ({ navigation }) => {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Create Account</Text>
-      <Text style={styles.subtitle}>Sign up to get started</Text>
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+      <View style={styles.container}>
+        <Text style={styles.title}>Create Account</Text>
+        <Text style={styles.subtitle}>Sign up to get started</Text>
 
-      <View style={styles.inputContainer}>
-        <TextInput
-          style={styles.input}
-          placeholder="Full Name"
-          value={name}
-          onChangeText={setName}
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Email"
-          value={email}
-          onChangeText={setEmail}
-          keyboardType="email-address"
-          autoCapitalize="none"
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Password"
-          value={password}
-          onChangeText={setPassword}
-          secureTextEntry
-        />
-      </View>
+        <View style={styles.inputContainer}>
+          <TextInput
+            style={styles.input}
+            placeholder="Full Name"
+            value={name}
+            onChangeText={setName}
+          />
+          <TextInput
+            style={styles.input}
+            placeholder="Email"
+            value={email}
+            onChangeText={setEmail}
+            keyboardType="email-address"
+            autoCapitalize="none"
+          />
+          <TextInput
+            style={styles.input}
+            placeholder="Password"
+            value={password}
+            onChangeText={setPassword}
+            secureTextEntry
+          />
+        </View>
 
-      <TouchableOpacity style={styles.button} onPress={handleRegister} disabled={isLoading}>
-        {isLoading ? (
-          <ActivityIndicator color="#fff" />
-        ) : (
-          <Text style={styles.buttonText}>Register</Text>
-        )}
-      </TouchableOpacity>
-
-      <View style={styles.footer}>
-        <Text style={styles.footerText}>Already have an account? </Text>
-        <TouchableOpacity onPress={() => navigation.navigate('Login')}>
-          <Text style={styles.link}>Sign In</Text>
+        <TouchableOpacity style={styles.button} onPress={handleRegister} disabled={isLoading}>
+          {isLoading ? (
+            <ActivityIndicator color="#fff" />
+          ) : (
+            <Text style={styles.buttonText}>Register</Text>
+          )}
         </TouchableOpacity>
+
+        <View style={styles.footer}>
+          <Text style={styles.footerText}>Already have an account? </Text>
+          <TouchableOpacity onPress={() => navigation.navigate('Login')}>
+            <Text style={styles.link}>Sign In</Text>
+          </TouchableOpacity>
+        </View>
       </View>
-    </View>
+    </TouchableWithoutFeedback>
   );
 };
 
