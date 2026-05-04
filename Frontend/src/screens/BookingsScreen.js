@@ -36,6 +36,7 @@ const BookingsScreen = ({ navigation }) => {
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [fetchError, setFetchError] = useState(false);
 
   // Edit modal state
   const [editModalVisible, setEditModalVisible] = useState(false);
@@ -45,13 +46,17 @@ const BookingsScreen = ({ navigation }) => {
   const [editError, setEditError] = useState('');
 
   const pollRef = useRef(null);
+  const hasFetchedRef = useRef(false);
 
   const fetchBookings = async (silent = false) => {
+    if (!silent) setFetchError(false);
     try {
       const data = await getBookings();
       setBookings(data);
+      hasFetchedRef.current = true;
     } catch (error) {
       console.log('Error fetching bookings', error);
+      if (!silent) setFetchError(true);
     } finally {
       if (!silent) {
         setLoading(false);
@@ -61,13 +66,8 @@ const BookingsScreen = ({ navigation }) => {
   };
 
   useEffect(() => {
-    // Fetch immediately on mount (needed for Expo Web where focus events may not fire)
-    fetchBookings();
-  }, []);
-
-  useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
-      setLoading(true);
+      if (!hasFetchedRef.current) setLoading(true);
       fetchBookings();
       if (pollRef.current) clearInterval(pollRef.current);
       pollRef.current = setInterval(() => fetchBookings(true), POLL_INTERVAL);
@@ -75,13 +75,16 @@ const BookingsScreen = ({ navigation }) => {
     const unsubscribeBlur = navigation.addListener('blur', () => {
       if (pollRef.current) clearInterval(pollRef.current);
     });
+    // Also fetch on mount for Expo Web where focus events may not fire
+    if (Platform.OS === 'web' && !hasFetchedRef.current) {
+      fetchBookings();
+    }
     return () => {
       unsubscribe();
       unsubscribeBlur();
       if (pollRef.current) clearInterval(pollRef.current);
     };
   }, [navigation]);
-
 
   const onRefresh = () => {
     setRefreshing(true);
@@ -194,6 +197,22 @@ const BookingsScreen = ({ navigation }) => {
     return (
       <View style={styles.centered}>
         <ActivityIndicator size="large" color="#3498DB" />
+      </View>
+    );
+  }
+
+  if (fetchError) {
+    return (
+      <View style={styles.centered}>
+        <Ionicons name="cloud-offline-outline" size={52} color="#BDC3C7" />
+        <Text style={styles.emptyText}>Could not load appointments.</Text>
+        <Text style={styles.emptySubText}>Check your internet connection and try again.</Text>
+        <TouchableOpacity
+          style={styles.retryBtn}
+          onPress={() => { setLoading(true); fetchBookings(); }}
+        >
+          <Text style={styles.retryBtnText}>Retry</Text>
+        </TouchableOpacity>
       </View>
     );
   }
@@ -404,6 +423,18 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: '#BDC3C7',
     marginTop: 4,
+  },
+  retryBtn: {
+    marginTop: 20,
+    backgroundColor: '#3498DB',
+    paddingHorizontal: 32,
+    paddingVertical: 12,
+    borderRadius: 10,
+  },
+  retryBtnText: {
+    color: '#FFF',
+    fontWeight: 'bold',
+    fontSize: 15,
   },
   // Modal
   modalOverlay: {
