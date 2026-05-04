@@ -132,6 +132,59 @@ const updateBookingStatus = async (req, res, next) => {
   }
 };
 
+// @desc    Student edits their own booking reason
+// @route   PUT /api/bookings/:id
+// @access  Private (student)
+const updateBooking = async (req, res, next) => {
+  try {
+    const booking = await Booking.findById(req.params.id);
+    if (!booking) {
+      return res.status(404).json({ message: 'Booking not found' });
+    }
+    // Only the student who owns it can edit, and only if still PENDING
+    if (booking.student.toString() !== req.user._id.toString()) {
+      return res.status(403).json({ message: 'Not authorized' });
+    }
+    if (booking.status !== 'PENDING') {
+      return res.status(400).json({ message: 'Can only edit a pending booking' });
+    }
+    booking.reason = req.body.reason || booking.reason;
+    await booking.save();
+    res.json(booking);
+  } catch (error) {
+    next(error);
+  }
+};
+
+// @desc    Student cancels their own booking
+// @route   PUT /api/bookings/:id/cancel
+// @access  Private (student)
+const cancelBooking = async (req, res, next) => {
+  try {
+    const booking = await Booking.findById(req.params.id);
+    if (!booking) {
+      return res.status(404).json({ message: 'Booking not found' });
+    }
+    if (booking.student.toString() !== req.user._id.toString()) {
+      return res.status(403).json({ message: 'Not authorized' });
+    }
+    if (booking.status !== 'PENDING') {
+      return res.status(400).json({ message: 'Can only cancel a pending booking' });
+    }
+    booking.status = 'CANCELLED';
+    await booking.save();
+    // Free the time slot back
+    const timeSlot = await TimeSlot.findById(booking.timeSlot);
+    if (timeSlot) {
+      timeSlot.isAvailable = true;
+      await timeSlot.save();
+    }
+    res.json(booking);
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   getAvailableTimeSlots,
   getAllTimeSlots,
@@ -140,4 +193,6 @@ module.exports = {
   getAllBookings,
   createBooking,
   updateBookingStatus,
+  updateBooking,
+  cancelBooking,
 };

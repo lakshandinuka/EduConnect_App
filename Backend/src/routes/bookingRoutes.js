@@ -8,6 +8,8 @@ const {
   updateBookingStatus,
   getAllTimeSlots,
   getAllBookings,
+  updateBooking,
+  cancelBooking,
 } = require('../controllers/bookingController');
 const { protect, authorize } = require('../middleware/authMiddleware');
 
@@ -28,6 +30,14 @@ router.route('/')
 // All bookings (staff/admin)
 router.route('/all')
   .get(protect, authorize('staff', 'admin'), getAllBookings);
+
+// Student cancel their own booking
+router.route('/:id/cancel')
+  .put(protect, authorize('student'), cancelBooking);
+
+// Student edit their own booking reason
+router.route('/:id')
+  .put(protect, authorize('student'), updateBooking);
 
 router.route('/:id/status')
   .put(protect, authorize('staff', 'admin'), updateBookingStatus);
