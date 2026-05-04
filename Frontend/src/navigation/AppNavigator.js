@@ -39,6 +39,7 @@ import ManageKBCategoriesScreen from '../screens/ManageKBCategoriesScreen';
 import KnowledgeBaseHomeScreen from '../screens/KnowledgeBaseHomeScreen';
 import KnowledgeBaseItemScreen from '../screens/KnowledgeBaseItemScreen';
 import KnowledgeBaseFAQsScreen from '../screens/KnowledgeBaseFAQsScreen';
+import ProfileScreen from '../screens/ProfileScreen';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -122,7 +123,7 @@ const AdminTabs = () => (
       if (route.name === 'Home') iconName = 'home';
       else if (route.name === 'Tickets') iconName = 'list';
       else if (route.name === 'Analytics') iconName = 'bar-chart';
-      else if (route.name === 'Settings') iconName = 'settings';
+      else if (route.name === 'Profile') iconName = 'person-circle';
       return <Ionicons name={iconName} size={size} color={color} />;
     },
     tabBarActiveTintColor: '#2C3E50',
@@ -130,7 +131,7 @@ const AdminTabs = () => (
     <Tab.Screen name="Home" component={AdminDashboard} options={{ headerShown: false }} />
     <Tab.Screen name="Tickets" component={TicketStack} options={{ headerShown: false }} />
     <Tab.Screen name="Analytics" component={AnalyticsScreen} />
-    <Tab.Screen name="Settings" component={AdminDashboard} /> 
+    <Tab.Screen name="Profile" component={ProfileScreen} />
   </Tab.Navigator>
 );
 
