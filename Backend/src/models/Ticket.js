@@ -50,6 +50,20 @@ const ticketSchema = new mongoose.Schema({
     ref: 'User',
   },
   comments: [commentSchema],
+
+  autoEscalated: {
+    type: Boolean,
+    default: false,
+  },
+  escalatedAt: {
+    type: Date,
+    default: null,
+  },
+  escalationReason: {
+    type: String,
+    default: null,
+  },
+
   // Student satisfaction rating (submitted when ticket is RESOLVED or CLOSED)
   rating: {
     type: Number,

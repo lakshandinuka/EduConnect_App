@@ -55,6 +55,8 @@ const createSLAPolicy = async (req, res, next) => {
       responseTimeUnit,
       resolutionTimeValue,
       resolutionTimeUnit,
+      escalationTimeValue,
+      escalationTimeUnit,
       escalationRules,
     } = req.body;
 
@@ -67,6 +69,8 @@ const createSLAPolicy = async (req, res, next) => {
       responseTimeUnit,
       resolutionTimeValue,
       resolutionTimeUnit,
+      escalationTimeValue,
+      escalationTimeUnit,
       escalationRules,
     });
 
@@ -100,6 +104,8 @@ const updateSLAPolicy = async (req, res, next) => {
       responseTimeUnit,
       resolutionTimeValue,
       resolutionTimeUnit,
+      escalationTimeValue,
+      escalationTimeUnit,
       escalationRules,
     } = req.body;
 
@@ -111,6 +117,8 @@ const updateSLAPolicy = async (req, res, next) => {
     policy.responseTimeUnit = responseTimeUnit !== undefined ? responseTimeUnit : policy.responseTimeUnit;
     policy.resolutionTimeValue = resolutionTimeValue !== undefined ? resolutionTimeValue : policy.resolutionTimeValue;
     policy.resolutionTimeUnit = resolutionTimeUnit !== undefined ? resolutionTimeUnit : policy.resolutionTimeUnit;
+    policy.escalationTimeValue = escalationTimeValue !== undefined ? escalationTimeValue : policy.escalationTimeValue;
+    policy.escalationTimeUnit = escalationTimeUnit !== undefined ? escalationTimeUnit : policy.escalationTimeUnit;
     policy.escalationRules = escalationRules !== undefined ? escalationRules : policy.escalationRules;
 
     const updatedPolicy = await policy.save();

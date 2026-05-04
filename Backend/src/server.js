@@ -12,6 +12,7 @@ const slaPolicyRoutes = require('./routes/slaPolicyRoutes');
 const analyticsRoutes = require('./routes/analyticsRoutes');
 const knowledgeBaseRoutes = require('./routes/knowledgeBaseRoutes');
 const { errorHandler } = require('./middleware/errorMiddleware');
+const { startSLAEscalationJob } = require('./services/slaEscalationService');
 
 // Load environment variables
 dotenv.config();
@@ -43,4 +44,6 @@ const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
   console.log(`Server running in ${process.env.NODE_ENV} mode on port ${PORT}`);
+
+  startSLAEscalationJob();
 });

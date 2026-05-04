@@ -35,6 +35,9 @@ const ManageSLAPoliciesScreen = () => {
   const [resolutionTimeValue, setResolutionTimeValue] = useState('');
   const [resolutionTimeUnit, setResolutionTimeUnit] = useState('HOURS');
 
+  const [escalationTimeValue, setEscalationTimeValue] = useState('');
+  const [escalationTimeUnit, setEscalationTimeUnit] = useState('HOURS');
+
   const [submitting, setSubmitting] = useState(false);
 
   const fetchPolicies = async () => {
@@ -62,6 +65,8 @@ const ManageSLAPoliciesScreen = () => {
     setResponseTimeUnit('HOURS');
     setResolutionTimeValue('');
     setResolutionTimeUnit('HOURS');
+    setEscalationTimeValue('');
+    setEscalationTimeUnit('HOURS');
     setSelectedPolicy(null);
     setIsEditing(false);
   };
@@ -96,6 +101,14 @@ const ManageSLAPoliciesScreen = () => {
 
     setResolutionTimeUnit(policy.resolutionTimeUnit || 'HOURS');
 
+    setEscalationTimeValue(
+      policy.escalationTimeValue !== undefined && policy.escalationTimeValue !== null
+        ? String(policy.escalationTimeValue)
+        : ''
+    );
+
+    setEscalationTimeUnit(policy.escalationTimeUnit || 'HOURS');
+
     setModalVisible(true);
   };
 
@@ -105,8 +118,8 @@ const ManageSLAPoliciesScreen = () => {
   };
 
   const handleSubmit = async () => {
-    if (!name.trim() || !responseTimeValue || !resolutionTimeValue) {
-      Alert.alert('Error', 'Name, Response Time, and Resolution Time are required');
+    if (!name.trim() || !responseTimeValue || !resolutionTimeValue || !escalationTimeValue) {
+      Alert.alert('Error', 'Name, Response Time, Resolution Time, and Escalation Time are required');
       return;
     }
 
@@ -121,6 +134,8 @@ const ManageSLAPoliciesScreen = () => {
       responseTimeUnit,
       resolutionTimeValue: parseInt(resolutionTimeValue),
       resolutionTimeUnit,
+      escalationTimeValue: parseInt(escalationTimeValue),
+      escalationTimeUnit,
       escalationRules: selectedPolicy?.escalationRules || [],
     };
 
@@ -196,6 +211,10 @@ const ManageSLAPoliciesScreen = () => {
 
           <Text style={styles.timeText}>
             Resolution: {item.resolutionTimeValue || 0} {item.resolutionTimeUnit || 'HOURS'}
+          </Text>
+
+          <Text style={styles.timeText}>
+            Escalation: {item.escalationTimeValue || 0} {item.escalationTimeUnit || 'HOURS'}
           </Text>
         </View>
 
@@ -318,6 +337,21 @@ const ManageSLAPoliciesScreen = () => {
                 onChangeText={(text) => setResolutionTimeUnit(text.toUpperCase())}
               />
 
+              <TextInput
+                style={styles.input}
+                placeholder="Escalation Time Value *"
+                value={escalationTimeValue}
+                onChangeText={setEscalationTimeValue}
+                keyboardType="numeric"
+              />
+
+              <TextInput
+                style={styles.input}
+                placeholder="Escalation Time Unit: HOURS / MINUTES / DAYS"
+                value={escalationTimeUnit}
+                onChangeText={(text) => setEscalationTimeUnit(text.toUpperCase())}
+              />
+
               <View style={styles.row}>
                 <TouchableOpacity
                   style={styles.cancelBtn}
@@ -376,6 +410,11 @@ const ManageSLAPoliciesScreen = () => {
                   <Text style={styles.detailLabel}>Resolution Time</Text>
                   <Text style={styles.detailValue}>
                     {selectedPolicy.resolutionTimeValue || 0} {selectedPolicy.resolutionTimeUnit || 'HOURS'}
+                  </Text>
+
+                  <Text style={styles.detailLabel}>Escalation Time</Text>
+                  <Text style={styles.detailValue}>
+                    {selectedPolicy.escalationTimeValue || 0} {selectedPolicy.escalationTimeUnit || 'HOURS'}
                   </Text>
 
                   <Text style={styles.detailLabel}>Escalation Rules</Text>

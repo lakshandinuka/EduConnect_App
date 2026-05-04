@@ -1,4 +1,5 @@
 const Ticket = require('../models/Ticket');
+const { findActiveSLAPolicyForDepartment } = require('../services/slaEscalationService');
 
 // @desc    Get all tickets (students see own, staff/admin see all)
 // @route   GET /api/tickets
@@ -16,7 +17,10 @@ const getTickets = async (req, res, next) => {
       .populate('assignedTo', 'name')
       .populate('department', 'name')
       .populate('inquiryType', 'name')
-      .populate('slaPolicy', 'name')
+      .populate(
+        'slaPolicy',
+        'name responseTimeValue responseTimeUnit resolutionTimeValue resolutionTimeUnit escalationTimeValue escalationTimeUnit'
+      )
       .populate('comments.author', 'name role');
 
     res.json(tickets);
@@ -39,12 +43,15 @@ const createTicket = async (req, res, next) => {
       return res.status(400).json({ message: 'All fields (title, description, department, inquiryType) are required' });
     }
 
+    const matchingSLAPolicy = await findActiveSLAPolicyForDepartment(department);
+
     const ticket = await Ticket.create({
       title,
       description,
       department,
       inquiryType,
       student: req.user._id,
+      slaPolicy: matchingSLAPolicy ? matchingSLAPolicy._id : undefined,
     });
 
     res.status(201).json(ticket);
@@ -53,7 +60,6 @@ const createTicket = async (req, res, next) => {
     next(error);
   }
 };
-
 
 // @desc    Get single ticket
 // @route   GET /api/tickets/:id
@@ -65,7 +71,10 @@ const getTicketById = async (req, res, next) => {
       .populate('assignedTo', 'name')
       .populate('department', 'name')
       .populate('inquiryType', 'name')
-      .populate('slaPolicy', 'name responseTime resolutionTime')
+      .populate(
+        'slaPolicy',
+        'name responseTimeValue responseTimeUnit resolutionTimeValue resolutionTimeUnit escalationTimeValue escalationTimeUnit'
+      )
       .populate('comments.author', 'name role');
 
     if (!ticket) {
@@ -127,6 +136,9 @@ const escalateTicket = async (req, res, next) => {
 
     ticket.status = 'ESCALATED';
     ticket.assignedTo = req.user._id;
+    ticket.autoEscalated = false;
+    ticket.escalatedAt = new Date();
+    ticket.escalationReason = note || 'Manually escalated by staff/admin';
 
     // Add escalation note as a comment
     if (note) {
@@ -140,6 +152,10 @@ const escalateTicket = async (req, res, next) => {
       .populate('assignedTo', 'name')
       .populate('department', 'name')
       .populate('inquiryType', 'name')
+      .populate(
+        'slaPolicy',
+        'name responseTimeValue responseTimeUnit resolutionTimeValue resolutionTimeUnit escalationTimeValue escalationTimeUnit'
+      )
       .populate('comments.author', 'name role');
 
     res.json(updated);
@@ -178,7 +194,10 @@ const approveTicket = async (req, res, next) => {
       .populate('assignedTo', 'name')
       .populate('department', 'name')
       .populate('inquiryType', 'name')
-      .populate('slaPolicy', 'name')
+      .populate(
+        'slaPolicy',
+        'name responseTimeValue responseTimeUnit resolutionTimeValue resolutionTimeUnit escalationTimeValue escalationTimeUnit'
+      )
       .populate('comments.author', 'name role');
 
     res.json(updated);
@@ -197,7 +216,10 @@ const updateTicketSLA = async (req, res, next) => {
       req.params.id,
       { slaPolicy: slaPolicyId },
       { new: true }
-    ).populate('slaPolicy', 'name responseTime resolutionTime');
+    ).populate(
+      'slaPolicy',
+      'name responseTimeValue responseTimeUnit resolutionTimeValue resolutionTimeUnit escalationTimeValue escalationTimeUnit'
+    );
 
     if (!ticket) {
       return res.status(404).json({ message: 'Ticket not found' });
