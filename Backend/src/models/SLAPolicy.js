@@ -53,12 +53,6 @@ const slaPolicySchema = new mongoose.Schema({
   resolutionTimeUnit: {
     type: String,
   },
-  escalationTimeValue: {
-    type: Number,
-  },
-  escalationTimeUnit: {
-    type: String,
-  },
   escalationRules: [escalationRuleSchema],
 }, { timestamps: true });
 
