@@ -16,6 +16,9 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
+# Runtime uploads
+Backend/uploads/
+
 # OS files
 .DS_Store
 Thumbs.db

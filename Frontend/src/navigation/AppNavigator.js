@@ -1,8 +1,10 @@
 import React, { useContext } from 'react';
+import { View } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
 import { AuthContext } from '../context/AuthContext';
+import AskAIButton from '../components/AskAIButton';
 
 // Screens
 import LoginScreen from '../screens/LoginScreen';
@@ -30,6 +32,13 @@ import ManageBookingsScreen from '../screens/ManageBookingsScreen';
 import ManageDepartmentsScreen from '../screens/ManageDepartmentsScreen';
 import ManageInquiryTypesScreen from '../screens/ManageInquiryTypesScreen';
 import ManageSLAPoliciesScreen from '../screens/ManageSLAPoliciesScreen';
+import ManageKBArticlesScreen from '../screens/ManageKBArticlesScreen';
+import CreateEditKBItemScreen from '../screens/CreateEditKBItemScreen';
+import ManageKBFAQsScreen from '../screens/ManageKBFAQsScreen';
+import ManageKBCategoriesScreen from '../screens/ManageKBCategoriesScreen';
+import KnowledgeBaseHomeScreen from '../screens/KnowledgeBaseHomeScreen';
+import KnowledgeBaseItemScreen from '../screens/KnowledgeBaseItemScreen';
+import KnowledgeBaseFAQsScreen from '../screens/KnowledgeBaseFAQsScreen';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -51,24 +60,38 @@ const BookingStack = () => (
   </Stack.Navigator>
 );
 
+// --- KNOWLEDGEBASE STACK ---
+const KnowledgeBaseStack = () => (
+  <Stack.Navigator>
+    <Stack.Screen name="KnowledgeBaseHome" component={KnowledgeBaseHomeScreen} options={{ title: 'Knowledgebase' }} />
+    <Stack.Screen name="KnowledgeBaseItem" component={KnowledgeBaseItemScreen} options={{ title: 'Article' }} />
+    <Stack.Screen name="KnowledgeBaseFAQs" component={KnowledgeBaseFAQsScreen} options={{ title: 'FAQs' }} />
+  </Stack.Navigator>
+);
+
 // --- STUDENT NAVIGATOR ---
-const StudentTabs = () => (
-  <Tab.Navigator screenOptions={({ route }) => ({
-    tabBarIcon: ({ color, size }) => {
-      let iconName;
-      if (route.name === 'Home') iconName = 'home';
-      else if (route.name === 'Tickets') iconName = 'ticket';
-      else if (route.name === 'Bookings') iconName = 'calendar';
-      else if (route.name === 'Announcements') iconName = 'megaphone';
-      return <Ionicons name={iconName} size={size} color={color} />;
-    },
-    tabBarActiveTintColor: '#3498DB',
-  })}>
-    <Tab.Screen name="Home" component={StudentDashboard} options={{ headerShown: false }} />
-    <Tab.Screen name="Tickets" component={TicketStack} options={{ headerShown: false }} />
-    <Tab.Screen name="Bookings" component={BookingStack} options={{ headerShown: false }} />
-    <Tab.Screen name="Announcements" component={AnnouncementsScreen} />
-  </Tab.Navigator>
+const StudentTabs = ({ navigation }) => (
+  <View style={{ flex: 1 }}>
+    <Tab.Navigator screenOptions={({ route }) => ({
+      tabBarIcon: ({ color, size }) => {
+        let iconName;
+        if (route.name === 'Home') iconName = 'home';
+        else if (route.name === 'Tickets') iconName = 'ticket';
+        else if (route.name === 'Bookings') iconName = 'calendar';
+        else if (route.name === 'Knowledgebase') iconName = 'book';
+        else if (route.name === 'Announcements') iconName = 'megaphone';
+        return <Ionicons name={iconName} size={size} color={color} />;
+      },
+      tabBarActiveTintColor: '#3498DB',
+    })}>
+      <Tab.Screen name="Home" component={StudentDashboard} options={{ headerShown: false }} />
+      <Tab.Screen name="Tickets" component={TicketStack} options={{ headerShown: false }} />
+      <Tab.Screen name="Bookings" component={BookingStack} options={{ headerShown: false }} />
+      <Tab.Screen name="Knowledgebase" component={KnowledgeBaseStack} options={{ headerShown: false }} />
+      <Tab.Screen name="Announcements" component={AnnouncementsScreen} />
+    </Tab.Navigator>
+    <AskAIButton navigation={navigation} />
+  </View>
 );
 
 // --- STAFF NAVIGATOR ---
@@ -139,6 +162,10 @@ const AppNavigator = () => {
           <Stack.Screen name="ManageInquiryTypes" component={ManageInquiryTypesScreen} options={{ title: 'Inquiry Types' }} />
           <Stack.Screen name="ManageSLAPolicies" component={ManageSLAPoliciesScreen} options={{ title: 'SLA Policies' }} />
           <Stack.Screen name="ManageBookings" component={ManageBookingsScreen} options={{ title: 'Bookings' }} />
+          <Stack.Screen name="ManageKBArticles" component={ManageKBArticlesScreen} options={{ title: 'Knowledgebase Articles' }} />
+          <Stack.Screen name="CreateEditKBItem" component={CreateEditKBItemScreen} options={{ title: 'Knowledgebase Item' }} />
+          <Stack.Screen name="ManageKBFAQs" component={ManageKBFAQsScreen} options={{ title: 'Knowledgebase FAQs' }} />
+          <Stack.Screen name="ManageKBCategories" component={ManageKBCategoriesScreen} options={{ title: 'Knowledgebase Categories' }} />
         </>
       )}
     </Stack.Navigator>
