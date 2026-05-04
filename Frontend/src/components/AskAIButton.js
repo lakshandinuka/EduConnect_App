@@ -134,7 +134,7 @@ const AskAIButton = ({ navigation }) => {
 const styles = StyleSheet.create({
   floatingButton: {
     position: 'absolute',
-    right: 16,
+    left: 16,
     bottom: 84,
     backgroundColor: '#2C3E50',
     borderRadius: 24,
