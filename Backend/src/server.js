@@ -10,6 +10,7 @@ const departmentRoutes = require('./routes/departmentRoutes');
 const inquiryTypeRoutes = require('./routes/inquiryTypeRoutes');
 const slaPolicyRoutes = require('./routes/slaPolicyRoutes');
 const analyticsRoutes = require('./routes/analyticsRoutes');
+const knowledgeBaseRoutes = require('./routes/knowledgeBaseRoutes');
 const { errorHandler } = require('./middleware/errorMiddleware');
 
 // Load environment variables
@@ -33,6 +34,7 @@ app.use('/api/departments', departmentRoutes);
 app.use('/api/inquiry-types', inquiryTypeRoutes);
 app.use('/api/sla-policies', slaPolicyRoutes);
 app.use('/api/analytics', analyticsRoutes);
+app.use('/api/kb', knowledgeBaseRoutes);
 
 // Error Middleware
 app.use(errorHandler);

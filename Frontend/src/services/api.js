@@ -13,7 +13,7 @@ const getApiUrl = () => {
   return `http://${LOCAL_IP}:5001/api`;
 };
 
-const API_URL = getApiUrl();
+export const API_URL = getApiUrl();
 
 const api = axios.create({
   baseURL: API_URL,
