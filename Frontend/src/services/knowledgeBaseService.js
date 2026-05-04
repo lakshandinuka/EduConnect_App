@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import * as FileSystem from 'expo-file-system';
+import * as FileSystem from 'expo-file-system/legacy';
 import api, { API_URL } from './api';
 
 const normalizeItem = (item) => {
@@ -121,9 +121,15 @@ export const downloadKBPDFToFile = async (item) => {
     .replace(/^-+|-+$/g, '')
     .slice(0, 80) || 'document';
   const fileUri = `${FileSystem.documentDirectory}${safeTitle}.pdf`;
-  return FileSystem.downloadAsync(`${API_URL}/kb/items/${item.id}/download`, fileUri, {
+  const result = await FileSystem.downloadAsync(`${API_URL}/kb/items/${item.id}/download`, fileUri, {
     headers: token ? { Authorization: `Bearer ${token}` } : {},
   });
+  if (result.status < 200 || result.status >= 300) {
+    const error = new Error(`PDF download failed with status ${result.status}`);
+    error.status = result.status;
+    throw error;
+  }
+  return result;
 };
 
 export const getKBCategories = async () => {

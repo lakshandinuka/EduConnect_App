@@ -67,7 +67,11 @@ const KnowledgeBaseItemScreen = ({ route, navigation }) => {
         Alert.alert('Downloaded', result.uri);
       }
     } catch (error) {
-      Alert.alert('Error', 'Failed to download PDF');
+      console.error('KB PDF download error:', error);
+      const message = error.status === 404
+        ? 'PDF file was not found. Please ask an admin to re-upload it.'
+        : 'Failed to download PDF';
+      Alert.alert('Error', message);
     } finally {
       setDownloading(false);
     }
